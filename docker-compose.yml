@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres:16
+    container_name: eve-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: eve_healthcare
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build: .
+    container_name: eve-healthcare-api
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql+psycopg2://postgres:postgres@db:5432/eve_healthcare
+      JWT_SECRET: dev-secret-change-this-later
+    ports:
+      - "8000:8000"
+
+volumes:
+  postgres_data:
